@@ -12,5 +12,7 @@ namespace ODataServer.Models
         public string name { get; set; }
         public int age { get; set; }
 
+        public int dummyProperty { get; set; }
+
     }
 }
