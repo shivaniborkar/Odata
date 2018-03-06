@@ -14,6 +14,7 @@ namespace ODataServer.Models
 
         public int dummyProperty { get; set; }
         public int dummyProperty1 { get; set; }
+        public int dummyProperty2 { get; set; }
 
     }
 }
