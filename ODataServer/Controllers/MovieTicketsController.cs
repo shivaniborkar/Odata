@@ -13,6 +13,7 @@ using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
 using ODataServer.Models;
 
+
 namespace ODataServer.Controllers
 {
     /*
@@ -25,10 +26,13 @@ namespace ODataServer.Controllers
     builder.EntitySet<MovieTicket>("MovieTickets");
     config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
     */
+    
     public class MovieTicketsController : ODataController
     {
         private MovieTicketContext db = new MovieTicketContext();
 
+
+       // [ResponseCache(NoStore = true)]
         // GET: odata/MovieTickets
         [EnableQuery]
         public IQueryable<MovieTicket> GetMovieTickets()
@@ -40,7 +44,7 @@ namespace ODataServer.Controllers
         [EnableQuery]
         public SingleResult<MovieTicket> GetMovieTicket([FromODataUri] int key)
         {
-            return SingleResult.Create(db.MovieTickets.Where(movieTicket => movieTicket.MovieId == key));
+            return SingleResult.Create(db.MovieTickets.Where(movieTicket => movieTicket.movieId == key));
         }
 
         // PUT: odata/MovieTickets(5)
@@ -58,7 +62,10 @@ namespace ODataServer.Controllers
             {
                 return NotFound();
             }
-
+            if (movieTicket.numOfTicketsToBuy > 0)
+            {
+                movieTicket.availableTickets = movieTicket.availableTickets - movieTicket.numOfTicketsToBuy;
+            }
             patch.Put(movieTicket);
 
             try
@@ -94,7 +101,45 @@ namespace ODataServer.Controllers
             return Created(movieTicket);
         }
 
-        // PATCH: odata/MovieTickets(5)
+
+
+        //[HttpPost]
+        //[("GetSalesTaxRate(PostalCode={postalCode})")]
+        //public IHttpActionResult GetSalesTaxRate([FromODataUri] int postalCode)
+        //{
+        //    double rate = 5.6;  // Use a fake number for the sample.
+        //    return Ok(rate);
+        //}
+
+
+
+
+        //// POST: odata/MovieTickets
+        //public async Task<IHttpActionResult> Post(List<MovieTicket> movieTicket)
+        //{
+        //    MovieTicket movieData = new MovieTicket();
+        //    int i = 0;
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //   while(movieTicket.Count!=0)
+        //        {
+        //        movieData = movieTicket[i];
+        //        db.MovieTickets.Add(movieData);
+        //        i++;
+        //        }
+        //    await db.SaveChangesAsync();
+
+        //    return Created(movieTicket);
+        //}
+
+
+
+
+        // PATCH: odata/MovieTickets(5)  
+       
         [AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<MovieTicket> patch)
         {
@@ -110,7 +155,10 @@ namespace ODataServer.Controllers
             {
                 return NotFound();
             }
-
+            //if(movieTicket.numOfTicketsToBuy>0)
+            //{
+            //    movieTicket.availableTickets = movieTicket.availableTickets - movieTicket.numOfTicketsToBuy;
+            //}
             patch.Patch(movieTicket);
 
             try
@@ -158,7 +206,7 @@ namespace ODataServer.Controllers
 
         private bool MovieTicketExists(int key)
         {
-            return db.MovieTickets.Count(e => e.MovieId == key) > 0;
+            return db.MovieTickets.Count(e => e.movieId == key) > 0;
         }
     }
 }
